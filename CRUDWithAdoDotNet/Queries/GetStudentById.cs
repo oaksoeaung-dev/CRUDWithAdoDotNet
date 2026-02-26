@@ -1,5 +1,7 @@
 ﻿using CRUDWithAdoDotNet.Models;
+using CRUDWithAdoDotNet.Services;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace CRUDWithAdoDotNet.Queries;
 
@@ -10,28 +12,25 @@ internal class GetStudentById
         Console.Write("Enter Id: ");
         string id = Console.ReadLine();
 
-        using (SqlConnection conn = new SqlConnection(connectionString))
+        var students = new List<Student>();
+        string query = "SELECT * FROM tblStudents WHERE Id = @Id";
+
+        var service = new AdoDotNetService();
+        var dataTable = service.Get(query, new SqlParameter("@Id", id));
+
+        foreach (DataRow row in dataTable.Rows)
         {
-            string query = "SELECT * FROM tblStudents WHERE Id = @Id";
-            SqlCommand cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Id", id);
-            conn.Open();
-            SqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read())
+            DateTime dobDateTime = DateTime.Parse(row["Dob"].ToString());
+            DateOnly dob = DateOnly.FromDateTime(dobDateTime);
+
+            students.Add(new()
             {
-                DateTime dobDateTime = DateTime.Parse(reader["Dob"].ToString());
-                DateOnly dob = DateOnly.FromDateTime(dobDateTime);
-
-                return new()
-                {
-                    Id = reader["Id"].ToString()!,
-                    Name = reader["Name"].ToString()!,
-                    Email = reader["Email"].ToString()!,
-                    Dob = dob
-                };
-
-            }
-            return null;
+                Id = row["Id"].ToString()!,
+                Name = row["Name"].ToString()!,
+                Email = row["Email"].ToString()!,
+                Dob = dob
+            });
         }
+        return students.FirstOrDefault();
     }
 }

@@ -1,28 +1,30 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using CRUDWithAdoDotNet.Services;
+using Microsoft.Data.SqlClient;
 
 namespace CRUDWithAdoDotNet.Command;
 
 internal class DeleteStudent
 {
-    public static void Run(string connectionString)
+    public static void Run()
     {
         Console.Write("Enter Id: ");
         string id = Console.ReadLine();
 
-        using (SqlConnection conn = new SqlConnection(connectionString))
+        string query = "DELETE FROM tblStudents WHERE Id=@Id";
+
+        var service = new AdoDotNetService();
+
+        var result = service.Set(query,
+            new SqlParameter("@Id", id)
+            );
+
+        if (result > 0)
         {
-            string query = "DELETE FROM tblStudents WHERE Id=@Id";
-
-            SqlCommand cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Id", id);
-
-            conn.Open();
-            int rows = cmd.ExecuteNonQuery();
-
-            if (rows > 0)
-                Console.WriteLine("\nStudent Deleted Successfully!\n");
-            else
-                Console.WriteLine("\nStudent Not Found.\n");
+            Console.WriteLine("\nStudent Deleted Successfully!\n");
+        }
+        else
+        {
+            Console.WriteLine("\nStudent Not Found.\n");
         }
     }
 }

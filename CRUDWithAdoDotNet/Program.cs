@@ -68,7 +68,7 @@ while (true)
             case 3:
                 Console.Clear();
                 Console.WriteLine("\n===== Create a new student =====\n");
-                CreateStudent.Run(connectionString);
+                UpsertStudent.Run();
                 Console.WriteLine();
                 Console.Write("Press any key to go back to menu!");
                 Console.ReadKey();
@@ -77,7 +77,11 @@ while (true)
             case 4:
                 Console.Clear();
                 Console.WriteLine("\n===== Update a student =====\n");
-                UpdateStudent.Run(connectionString);
+
+                Console.Write("Enter Id: ");
+                string id = Console.ReadLine();
+
+                UpsertStudent.Run(id);
                 Console.WriteLine();
                 Console.Write("Press any key to go back to menu!");
                 Console.ReadKey();
@@ -86,7 +90,7 @@ while (true)
             case 5:
                 Console.Clear();
                 Console.WriteLine("\n===== Delete a student =====\n");
-                DeleteStudent.Run(connectionString);
+                DeleteStudent.Run();
                 Console.WriteLine();
                 Console.Write("Press any key to go back to menu!");
                 Console.ReadKey();
